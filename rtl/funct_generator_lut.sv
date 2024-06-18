@@ -2,9 +2,9 @@
 	=========================================================================================
 	Module name	: funct_generator LUT
 	Author		: Ana Godoy
-	Email			: ana.gm@circuify.com
-	Filename		: funct_generator_lut.sv
-	Type			: SystemVerilog Module
+	Email		: ana.gm@circuify.com
+	Filename	: funct_generator_lut.sv
+	Type		: SystemVerilog Module
 	
 	Description	:LUT
 	-----------------------------------------------------------------------------------------
@@ -12,7 +12,7 @@
 
 	-----------------------------------------------------------------------------------------
 	Version		: 1.0
-	Date			: 19 Jun 2023
+	Date		: Jun 2024
 	-----------------------------------------------------------------------------------------
 */
 
@@ -25,11 +25,11 @@ module funct_generator_lut #(
 		input  logic                  clk,		
 		input  logic [ADDR_WIDTH-1:0] read_addr_i,
 		//Outputs
-		output logic [0:1-DATA_WIDTH] read_data_o
+		output logic [3:4-DATA_WIDTH] read_data_o
 );
 
 // signal declaration
-reg [DATA_WIDTH-1:0] lut_structure [2**ADDR_WIDTH-1:0]; 
+reg [3:4-DATA_WIDTH] lut_structure [2**ADDR_WIDTH-1:0]; 
 
 initial begin  //load hexadecimal data in txt
 		$readmemh(TXT_FILE, LUT_structure);		

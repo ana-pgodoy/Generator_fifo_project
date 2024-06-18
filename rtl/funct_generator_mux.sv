@@ -14,16 +14,14 @@
 */
 
 module funct_generator_mux #(
-	parameter DATA_WIDTH=8,
-	parameter DATA_WIDTH_OUT=16
-
+	parameter DATA_WIDTH=32
 )(
 	//INPUTS
-	input  logic       [1:0] 		sel_i, 
-	input  logic signed[3:4-DATA_WIDTH_OUT]	data_0_i,
-	input  logic signed[3:4-DATA_WIDTH_OUT]	data_1_i,
-	input  logic signed[3:4-DATA_WIDTH_OUT]	data_1_i,
-	input  logic signed[3:4-DATA_WIDTH_OUT]	data_3_i,
+	input  logic       [1:0] 	    sel_i, 
+	input  logic signed[3:4-DATA_WIDTH] data_0_i,
+	input  logic signed[3:4-DATA_WIDTH] data_1_i,
+	input  logic signed[3:4-DATA_WIDTH] data_1_i,
+	input  logic signed[3:4-DATA_WIDTH] data_3_i,
 	//OUTPUTS
 	output logic signed [3:4-DATA_WIDTH_OUT] data_o
 );
