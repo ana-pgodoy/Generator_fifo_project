@@ -15,16 +15,15 @@
 
 module funct_generator_multi #(
 	parameter DATA_WIDTH=8,
-				DATA_WIDTH_OUT=16
-
+	parameter DATA_WIDTH_OUT=(DATA_WIDTH*2)
 )(
 	//INPUTS
 	input  logic 				enh, 
-	input  logic signed[0:1-DATA_WIDTH]	a_i,
-	input  logic signed[3:4-DATA_WIDTH]	b_i,
+	input  logic signed[DATA_WIDTH-1:0]	a_i,
+	input  logic signed[DATA_WIDTH-1:0]	b_i,
 	
 	//OUTPUTS
-	output logic signed [3:4-DATA_WIDTH_OUT] data_o
+	output logic signed [DATA_WIDTH_OUT-1:0] data_o
 );
 
 

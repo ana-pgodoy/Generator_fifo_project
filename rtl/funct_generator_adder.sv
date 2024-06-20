@@ -16,23 +16,23 @@
 */
 
 module funct_generator_adder #(
-	parameter DATA_WIDTH_IN=5,
-	parameter DATA_WIDTH_OUT=6
+	parameter DATA_WIDTH=8
 )(
 	input  logic 	    		    clrh,
 	input  logic 	    		    enh,
-	input  logic [DATA_WIDTH_IN-1:0]    data_a_i,
-	input  logic [DATA_WIDTH_IN-1:0]    data_b_i,
-	input  logic [DATA_WIDTH_IN-1:0]    data_c_i,
-	output logic [DATA_WIDTH_OUT-1:0]   data_o 	
+	input  logic [DATA_WIDTH-1:0]    data_a_i,
+	input  logic [DATA_WIDTH-1:0]    data_b_i,
+	input  logic [DATA_WIDTH-1:0]    data_c_i,
+	output logic [DATA_WIDTH-1:0]   data_o 	
 );
 
 always_comb begin
-	if(clrh)
-	    data_o = '0;
-	else if(enh)
-	    data_o = data_a_i + data_b_i + data_c_i;
-	
+    if(clrh) begin
+        data_o = '0;
+    end
+    else if(enh) begin
+        data_o = (data_a_i + data_b_i + data_c_i);
+    end
 end
 
 endmodule
