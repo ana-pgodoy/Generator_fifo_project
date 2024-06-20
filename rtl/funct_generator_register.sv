@@ -32,11 +32,11 @@ module funct_generator_register #(
 
 always_ff@(posedge clk, posedge rst) begin
 	if(rst)
-		data_o<=RESET_VALUE;
+		q<=RESET_VALUE;
 	else if(clrh)
-		data_o<={DATA_WIDTH{1'b0}};
+		q<={DATA_WIDTH{1'b0}};
 	else if(enh)
-		data_o<=data_i;
+		q<=d;
 	
 end
 

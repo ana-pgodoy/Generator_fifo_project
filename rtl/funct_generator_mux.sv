@@ -18,22 +18,25 @@ module funct_generator_mux #(
 )(
 	//INPUTS
 	input  logic       [1:0] 	    sel_i, 
+	input  logic                 	    enh, 
 	input  logic signed[3:4-DATA_WIDTH] data_0_i,
 	input  logic signed[3:4-DATA_WIDTH] data_1_i,
-	input  logic signed[3:4-DATA_WIDTH] data_1_i,
+	input  logic signed[3:4-DATA_WIDTH] data_2_i,
 	input  logic signed[3:4-DATA_WIDTH] data_3_i,
 	//OUTPUTS
-	output logic signed [3:4-DATA_WIDTH_OUT] data_o
+	output logic signed [3:4-DATA_WIDTH] data_o
 );
 
 
 always_comb begin
-    case(sel_i)
-        0: data_o = data_0_i;
-        1: data_o = data_1_i;
-        2: data_o = data_2_i;
-        3: data_o = data_3_i;
-    endcase
+    if(enh) begin
+        case(sel_i)
+            0: data_o = data_0_i;
+            1: data_o = data_1_i;
+            2: data_o = data_2_i;
+            3: data_o = data_3_i;
+        endcase
+    end else data_o = ('0);
 end
 
 endmodule

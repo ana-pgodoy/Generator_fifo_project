@@ -25,14 +25,14 @@ module funct_generator_lut #(
 		input  logic                  clk,		
 		input  logic [ADDR_WIDTH-1:0] read_addr_i,
 		//Outputs
-		output logic [3:4-DATA_WIDTH] read_data_o
+		output logic signed [3:4-DATA_WIDTH] read_data_o
 );
 
 // signal declaration
 reg [3:4-DATA_WIDTH] lut_structure [2**ADDR_WIDTH-1:0]; 
 
 initial begin  //load hexadecimal data in txt
-		$readmemh(TXT_FILE, LUT_structure);		
+		$readmemh(TXT_FILE, lut_structure);		
 end
 
 //read operation
