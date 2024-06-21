@@ -25,7 +25,7 @@ module funct_generator_lut #(
 		input  logic                  clk,		
 		input  logic [ADDR_WIDTH-1:0] read_addr_i,
 		//Outputs
-		output logic signed [3:4-DATA_WIDTH] read_data_o
+		output logic signed [DATA_WIDTH-1 : 0] read_data_o
 );
 
 // signal declaration

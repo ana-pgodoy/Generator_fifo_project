@@ -19,12 +19,12 @@ module funct_generator_mux #(
 	//INPUTS
 	input  logic       [1:0] 	    sel_i, 
 	input  logic                 	    enh, 
-	input  logic signed[3:4-DATA_WIDTH] data_0_i,
-	input  logic signed[3:4-DATA_WIDTH] data_1_i,
-	input  logic signed[3:4-DATA_WIDTH] data_2_i,
-	input  logic signed[3:4-DATA_WIDTH] data_3_i,
+	input  logic signed[DATA_WIDTH-1 : 0] data_0_i,
+	input  logic signed[DATA_WIDTH-1 : 0] data_1_i,
+	input  logic signed[DATA_WIDTH-1 : 0] data_2_i,
+	input  logic signed[DATA_WIDTH-1 : 0] data_3_i,
 	//OUTPUTS
-	output logic signed [3:4-DATA_WIDTH] data_o
+	output logic signed [DATA_WIDTH-1 : 0] data_o
 );
 
 

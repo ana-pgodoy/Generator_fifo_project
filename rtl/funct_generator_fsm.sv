@@ -25,12 +25,11 @@ module funct_generator_fsm (
     input  logic enh_conf_i,
     //OUTPUTS  
     output logic clrh_addr_fsm,	
-    output logic enh_addr_fsm,	
     output logic enh_config_fsm,
     output logic enh_gen_fsm
 );
 
-typedef enum logic [2:0] {IDLE, CONFI, GEN, XX='x} state_t; //For FSM states
+typedef enum logic [1:0] {IDLE, CONFI, GEN, XX='x} state_t; //For FSM states
 
  //typedef definitions
  state_t state;
@@ -65,20 +64,17 @@ typedef enum logic [2:0] {IDLE, CONFI, GEN, XX='x} state_t; //For FSM states
  always_ff @(posedge clk or posedge rst) begin
      if(rst) begin
 	enh_config_fsm <= 1'b0;
-	enh_addr_fsm <= 1'b0;
 	enh_gen_fsm <= 1'b0;
         clrh_addr_fsm <= 1'b0;
      end
      else begin
 	//First default values
 	enh_config_fsm <= 1'b0;
-	enh_addr_fsm <= 1'b0;
 	enh_gen_fsm <= 1'b0;
 	clrh_addr_fsm <= 1'b0;
 	unique case(next)
 	    IDLE:clrh_addr_fsm <= 1'b1 ;  
 	    GEN: begin
-	        enh_addr_fsm <= 1'b1;
 	        enh_gen_fsm <= 1'b1;
 	    end
 	    CONFI: begin  
