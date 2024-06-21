@@ -29,7 +29,7 @@ module funct_generator #(
         parameter SIN_FILE = "cos.txt",
         parameter TRIAN_FILE = "triangular.txt",
         parameter SQUA_FILE ="square.txt",
-        localparam FIXED_POINT_BITS = (DATA_WIDTH - INT_BITS),
+        localparam FIXED_POINT_BITS = (DATA_WIDTH - INT_BITS)
         )(
 	//INPUTS
 	input  logic 				                clk,
