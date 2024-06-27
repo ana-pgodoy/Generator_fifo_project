@@ -18,8 +18,7 @@
 import gen_fifo_defines_pkg::*;
 
 module tb();
-
-
+    
     localparam PERIOD = 10ns;
     localparam MID_PERIOD = (PERIOD/2);
 
@@ -32,7 +31,7 @@ module tb();
     //OUTPUTS
     bit wr_en_o;
     logic signed  [`DATA_WIDTH-1 : 0]  data_o;
-
+    
         
     funct_generator#(
 	.DATA_WIDTH(`DATA_WIDTH),
@@ -110,6 +109,6 @@ module tb();
     //Simulation setting	
     initial begin
 	$timeformat(-9, 2, "ns", 20);
-        $dumpfile("gen_fifo.vcd"); $dumpvars;
+    $dumpfile("gen_fifo.vcd"); $dumpvars;
     end
 endmodule

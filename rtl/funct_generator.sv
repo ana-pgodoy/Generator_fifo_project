@@ -24,11 +24,11 @@ module funct_generator #(
         parameter INT_BITS = 4,        
         parameter LUT_ADDR = 8,
         parameter RESET_VALUE=0,
-        parameter RESET_AMP=32'h10000000,
-        parameter COS_FILE = "sin.txt",
-        parameter SIN_FILE = "cos.txt",
-        parameter TRIAN_FILE = "triangular.txt",
-        parameter SQUA_FILE ="square.txt",
+        parameter RESET_AMP=32'h10000000, 
+        parameter COS_FILE = "C:/Users/jreyes/Downloads/Generator_fifo_project/rtl/sin.txt",
+        parameter SIN_FILE = "C:/Users/jreyes/Downloads/Generator_fifo_project/rtl/cos.txt",
+        parameter TRIAN_FILE = "C:/Users/jreyes/Downloads/Generator_fifo_project/rtl/triangular.txt",
+        parameter SQUA_FILE ="C:/Users/jreyes/Downloads/Generator_fifo_project/rtl/square.txt",
         localparam FIXED_POINT_BITS = (DATA_WIDTH - INT_BITS)
         )(
 	//INPUTS
@@ -193,7 +193,7 @@ funct_generator_mux #(
     .DATA_WIDTH(DATA_WIDTH)
 )mux_signal(
 	.sel_i(sel_i), 
-        .enh(1'b1),
+    .enh(1'b1),
 	.data_0_i(sin_temp),
 	.data_1_i(cos_temp),
 	.data_2_i(trian_temp),
