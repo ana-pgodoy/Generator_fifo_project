@@ -14,7 +14,7 @@
 */
 
 module funct_generator_multi #(
-	parameter DATA_WIDTH=8,
+	parameter DATA_WIDTH=32,
 	parameter DATA_WIDTH_OUT=(DATA_WIDTH*2)
 )(
 	//INPUTS
