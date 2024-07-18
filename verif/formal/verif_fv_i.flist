@@ -1,0 +1,7 @@
+./fv_funct_generator_adder_i.sv
+./fv_funct_generator_fsm_i.sv
+./fv_funct_generator_lut_i.sv
+./fv_funct_generator_multi_i.sv
+./fv_funct_generator_mux_i.sv
+./fv_funct_generator_register_i.sv
+./fv_funct_generator_top.sv
