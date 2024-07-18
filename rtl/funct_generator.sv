@@ -25,8 +25,8 @@ module funct_generator #(
         parameter LUT_ADDR = 8,
         parameter RESET_VALUE=0,
         parameter RESET_AMP=32'h10000000, 
-        parameter COS_FILE = "C:/Users/jreyes/Downloads/Generator_fifo_project/rtl/sin.txt",
-        parameter SIN_FILE = "C:/Users/jreyes/Downloads/Generator_fifo_project/rtl/cos.txt",
+        parameter COS_FILE = "C:/Users/jreyes/Downloads/Generator_fifo_project/rtl/cos.txt",
+        parameter SIN_FILE = "C:/Users/jreyes/Downloads/Generator_fifo_project/rtl/sin.txt",
         parameter TRIAN_FILE = "C:/Users/jreyes/Downloads/Generator_fifo_project/rtl/triangular.txt",
         parameter SQUA_FILE ="C:/Users/jreyes/Downloads/Generator_fifo_project/rtl/square.txt",
         localparam FIXED_POINT_BITS = (DATA_WIDTH - INT_BITS)
