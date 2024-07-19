@@ -1,6 +1,6 @@
 import gen_fifo_defines_pkg::*;
 
-module fv_generator(
+module fv_generator_top(
 	input  logic 				     	clk,
 	input  logic 				     	rst,
 	input  logic 				       	en_low_i, 
