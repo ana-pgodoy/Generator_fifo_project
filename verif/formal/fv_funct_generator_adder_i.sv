@@ -1,6 +1,6 @@
 import gen_fifo_defines_pkg::*;
 
-module fv_funct_generator_adder (
+module fv_funct_generator_adder_i (
 	input  logic 	    		clrh,
 	input  logic 	    		enh,
 	input  logic [`LUT_ADDR-1:0]  	data_a_i,

@@ -1,6 +1,6 @@
 import gen_fifo_defines_pkg::*;
 
-module fv_funct_generator_multi (
+module fv_funct_generator_multi_i (
 	input  logic 				enh, 
 	input  logic signed[`DATA_WIDTH-1:0]	a_i,
 	input  logic signed[`DATA_WIDTH-1:0]	b_i,
