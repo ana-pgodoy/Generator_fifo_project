@@ -1,6 +1,6 @@
 import gen_fifo_defines_pkg::*;
 
-module fv_funct_generator_adder_i (
+module fv_funct_generator_adder (
 	input  logic 	    		clrh,
 	input  logic 	    		enh,
 	input  logic [`LUT_ADDR-1:0]  	data_a_i,
@@ -8,7 +8,17 @@ module fv_funct_generator_adder_i (
 	input  logic [`LUT_ADDR-1:0] 	data_c_i,
 	input  logic [`LUT_ADDR-1:0]	data_o 
 );
-    `define CLK_PATH fv_generator_inst.clk
+	`define CLK_PATH fv_generator_inst.clk
+	`define RST_PATH fv_generator_inst.rst
+	bit flag;
+
+  	always @(posedge `CLK_PATH) begin
+      	if (`RST_PATH == 1'b1)
+        	flag <= 1'b0;
+      	else 
+        	flag <=1'b1;
+  	end
+
 ///////////////////////////////////////////////////// Assumptions /////////////////////////////////////////////
 
 	// 1) Assume enable and clear signals are not active simultaneously.
@@ -25,7 +35,7 @@ module fv_funct_generator_adder_i (
  	else $error(" Asserion fail enh_on_data_o_increment");
 	
 	// 3) The property assures that when enh is low and clrh is low, the output data_o remains unchanged. //changing $past for $stable and |=> for |->
-	data_o_stability_when_disabled: assert property (@(posedge `CLK_PATH) ((!enh) && (!clrh)) |-> ($stable(data_o))) $info("Assetion pass data_o_stability_when_disabled"); 
+	data_o_stability_when_disabled: assert property (@(posedge `CLK_PATH) ((!enh) && (!clrh) && flag) |-> ($stable(data_o))) $info("Assetion pass data_o_stability_when_disabled"); 
    	else $error(" Asserion fail data_o_stability_when_disabled");
  
 ///////////////////////////////////////////////////// Covers /////////////////////////////////////////////////////
