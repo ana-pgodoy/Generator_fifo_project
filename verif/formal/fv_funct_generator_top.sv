@@ -1,6 +1,6 @@
 import gen_fifo_defines_pkg::*;
 
-module fv_funct_generator_top(
+module fv_generator(
 	input  logic 				     	clk,
 	input  logic 				     	rst,
 	input  logic 				       	en_low_i, 
@@ -23,6 +23,17 @@ module fv_funct_generator_top(
 	bit en_config_amp
      );
 	bit flag;
+   	reg [`DATA_WIDTH-1:0] expected_sin [2**`LUT_ADDR-1:0];
+    	reg [`DATA_WIDTH-1:0] expected_cos [2**`LUT_ADDR-1:0];
+    	reg [`DATA_WIDTH-1:0] expected_trian [2**`LUT_ADDR-1:0];
+    	reg [`DATA_WIDTH-1:0] expected_squa [2**`LUT_ADDR-1:0];
+
+  	initial begin
+        	$readmemh(SIN_FILE, expected_sin);
+        	$readmemh(COS_FILE, expected_cos);
+        	$readmemh(TRIAN_FILE, expected_trian);
+        	$readmemh(SQUA_FILE, expected_squa);
+    	end
 	
 	always @(posedge clk) begin
       		if (rst == 1'b1)
@@ -40,24 +51,24 @@ module fv_funct_generator_top(
 
 ///////////////////////////////////////////////////// Assertions /////////////////////////////////////////////
 
-	// 1) The property assures that when clrh is high, the output addr_temp is set to zero.
+	// 2) The property assures that when clrh is high, the output addr_temp is set to zero.
 	clrh_on_addr_temp_zero: assert property (@(posedge clk) disable iff (rst) (clrh_addr_fsm) |-> (addr_temp == 0)) $info("Assetion pass clrh_on_data_o_zero");
 	else $error(" Asserion fail clrh_on_data_o_zero");
 	
-	// 2) The property assures that when enh is low and clrh is low, the output addr_temp remains unchanged.
-	addr_temp_stability_when_disabled: assert property (@(posedge clk) disable iff (rst) (!enh_gen_fsm && !clrh_addr_fsm) |-> ($stable(addr_temp)))
+	// 3) The property assures that when enh is low and clrh is low, the output addr_temp remains unchanged. //changing |=> for |-> and adding a flag
+	addr_temp_stability_when_disabled: assert property (@(posedge clk) disable iff (rst) (!enh_gen_fsm && !clrh_addr_fsm && flag) |-> ($stable(addr_temp)))
 	$info("Assetion pass data_o_stability_when_disabled"); else $error(" Asserion fail data_o_stability_when_disabled");
 	
-	// 3) The property assures that when enh is active the adder adds 1 to the current addess to produce the next addess when enh is high.
-	addr_increment1_when_enh: assert property (@(posedge clk) disable iff (rst) (enh_gen_fsm && !clrh_addr_fsm) |-> (addr_temp == addr + 1))
+	// 4) The property assures that when enh is active the adder adds 1 to the current addess to produce the next addess when enh is high. //adding the modulo operation for the wrapping behavior
+	addr_increment1_when_enh: assert property (@(posedge clk) disable iff (rst) (enh_gen_fsm && !clrh_addr_fsm) |-> (addr_temp == (addr + 1) % 256))
 	$info("Assetion pass addr_increment1_when_enh"); else $error(" Asserion fail addr_increment1_when_enh");
 
 ///////////////////////////////////////////////////// Covers /////////////////////////////////////////////////////
    	
-	// 1) Cover that is addr_temp is 0 when clrh is asserted.
+	// 5) Cover that is addr_temp is 0 when clrh is asserted.
 	clrh_clears_addr_temp: cover property (@(posedge clk) disable iff (rst) (clrh_addr_fsm && (addr_temp == 0)));
 	
-	// 2) Cover the scenario where enh is high, clrh is low, and addr_temp is addr + 1. 
+	// 6) Cover the scenario where enh is high, clrh is low, and addr_temp is addr + 1. 
 	next_address_is_addr_plus_1: cover property (@(posedge clk) disable iff (rst) (enh_gen_fsm && !clrh_addr_fsm && (addr_temp == addr + 1)));
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ funct_generator_multi ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
@@ -72,9 +83,13 @@ module fv_funct_generator_top(
 	multiplication_correct_when_enh_gen_fsm: assert property (@(posedge clk) disable iff (rst) (enh_gen_fsm) |-> (data_temp == (data_select * amp_reg))) $info("Assetion pass clrh_on_data_o_zero");
 	else $error(" Asserion fail clrh_on_data_o_zero");
 
+	// 2) The property assures that when a reset happen data_o will be assigned the value '0.
+	data_o_0_when_rst: assert property (@(posedge clk) disable iff (rst) (!flag) |-> (data_temp == '0)) $info("Assetion pass clrh_on_data_o_zero");
+	else $error(" Asserion fail clrh_on_data_o_zero");
+
 ///////////////////////////////////////////////////// Covers /////////////////////////////////////////////////////
    	
-	// 1) Cover property for the multiplication scenario.
+	// 3) Cover property for the multiplication scenario.
 	cover_multiplication_when_enh_gen_fsm: cover property (@(posedge clk) disable iff (rst) ((enh_gen_fsm) && (data_temp == (data_select * amp_reg))));
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ funct_generator_fsm ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
@@ -84,16 +99,16 @@ module fv_funct_generator_top(
 
 ///////////////////////////////////////////////////// Assertions /////////////////////////////////////////////
 	
-      	// 1)The property assures that after rst enh_config_fsm is 0. //changing |=> for |-> operator
-      	enh_config_fsm_0_when_rst: assert property (@(posedge clk) disable iff (rst) ($rose(flag)) |->  enh_config_fsm == 1'b0) $info("Assetion pass enh_config_fsm_0_when_rst");
+      	// 1)The property assures that when rst enh_config_fsm is 0. //changing |=> for |-> operator and !flag
+      	enh_config_fsm_0_when_rst: assert property (@(posedge clk) disable iff (rst) (!flag) |->  enh_config_fsm == 1'b0) $info("Assetion pass enh_config_fsm_0_when_rst");
 	else $error(" Asserion fail enh_config_fsm_0_when_rst");
             
-   	// 2) The property assures that after rst enh_gen_fsm is 0. //changing |=> for |-> operator
-      	enh_gen_fsm_0_when_rst: assert property (@(posedge clk) disable iff (rst) ($rose(flag)) |->  enh_gen_fsm == 1'b0) $info("Assetion pass enh_gen_fsm_0_when_rst");
+   	// 2) The property assures that when rst enh_gen_fsm is 0. //changing |=> for |-> operator and !flag
+      	enh_gen_fsm_0_when_rst: assert property (@(posedge clk) disable iff (rst) (!flag) |->  enh_gen_fsm == 1'b0) $info("Assetion pass enh_gen_fsm_0_when_rst");
       	else $error(" Asserion fail enh_gen_fsm_0_when_rst");
             
-	// 3) The property assures that after rst clrh_addr_fsm is 0.//changing |=> for |-> operator
-        clrh_addr_fsm_0_when_rst: assert property (@(posedge clk) disable iff (rst) ($rose(flag)) |->  clrh_addr_fsm == 1'b0) $info("Assetion pass clrh_addr_fsm_0_when_rst");
+	// 3) The property assures that when rst clrh_addr_fsm is 0.//changing |=> for |-> operator and !flag
+        clrh_addr_fsm_0_when_rst: assert property (@(posedge clk) disable iff (rst) (!flag) |->  clrh_addr_fsm == 1'b0) $info("Assetion pass clrh_addr_fsm_0_when_rst");
 	else $error(" Asserion fail clrh_addr_fsm_0_when_rst");
       
  	//  4) The property assures GEN to CONFI transition.
@@ -106,19 +121,19 @@ module fv_funct_generator_top(
         
 ///////////////////////////////////////////////////// Covers /////////////////////////////////////////////////////
    
-  	// 1) Cover that clrh_addr_fsm signal is asserted.
+  	// 6) Cover that clrh_addr_fsm signal is asserted.
 	cover_clrh_addr_fsm: cover property (@(posedge clk) disable iff (rst) clrh_addr_fsm);
  	
-	// 2) Cover that enh_config_fsm signal is asserted.
+	// 7) Cover that enh_config_fsm signal is asserted.
 	cover_enh_config_fsm: cover property (@(posedge clk) disable iff (rst) enh_config_fsm);
  	
-     	// 3) Cover that  enh_gen_fsm signal is asserted.
+     	// 8) Cover that  enh_gen_fsm signal is asserted.
 	cover_enh_gen_fsm: cover property (@(posedge clk) disable iff (rst) enh_gen_fsm);
       
-  	// 4) Cover that  en_low_i signal is asserted.
+  	// 9) Cover that  en_low_i signal is asserted.
    	cover_en_low_i: cover property (@(posedge clk) disable iff (rst) en_low_i);
     
-  	// 5) Cover that  enh_conf_i signal is asserted.
+  	// 10) Cover that  enh_conf_i signal is asserted.
 	cover_enh_conf_i: cover property (@(posedge clk) disable iff (rst) enh_conf_i);
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ funct_generator_lut ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
@@ -144,10 +159,26 @@ module fv_funct_generator_top(
 	// 4) The property assures squa_temp has a valid value.
 	squa_temp_valid_data: assert property (@(posedge clk) disable iff (rst) !$isunknown(squa_temp)) $info("Assetion pass squa_temp_valid_data");
 	else $error(" Asserion fail squa_temp_valid_data");
- 
+   
+      	// 5) The property assures the values in the sin.txt are the same as sin_temp
+	expected_sin_equal_sin_temp: assert property (@(posedge clk) flag |=> (sin_temp == expected_sin[$past(addr)]))$info("Assetion pass expected_sin_equal_sin_temp");
+        else $error(" Asserion fail at addrs: %0d, in temp: %0h, in expect: %0h", addr,sin_temp, expected_sin[addr]);
+        
+	// 6) The property assures the values in the cos.txt are the same as cos_temp
+	expected_cos_equal_cos_temp: assert property (@(posedge clk)flag |=>(cos_temp ==  expected_cos[$past(addr)]))$info("Assetion pass expected_cos_equal_cos_temp");
+        else $error("Asserion fail at addrs: %0d, in temp: %0h, in expect: %0h", addr,cos_temp, expected_sin[addr]);
+       	
+	// 7) The property assures the values in the trian.txt are the same as trian_temp
+	expected_trian_equal_trian_temp: assert property (@(posedge clk)flag |=>(trian_temp ==  expected_trian[$past(addr)]))$info("Assetion expected_trian_equal_trian_temp");
+        else $error(" Asserion fail at addr: %0d, in temp: %0h, in expect: %0h", addr,trian_temp, expected_sin[addr]);
+        
+	// 8) The property assures the values in the squa.txt are the same as squa_temp
+	expected_squa_equal_squa_temp: assert property (@(posedge clk) flag |=>(squa_temp ==  expected_squa[$past(addr)]))$info("expected_squa_equal_squa_temp");
+	else $error(" Asserion fail at addrs: %0d, in temp: %0h, in expect: %0h", addr,squa_temp, expected_sin[addr]);
+
 ///////////////////////////////////////////////////// Covers /////////////////////////////////////////////////////
    	
-     	// 1) Covers when addr reaches max value.
+     	// 9) Covers when addr reaches max value.
 	cover_sin_max_addr: cover property (@(posedge clk) disable iff (rst) addr == ((2**`LUT_ADDR) - 1));
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ funct_generator_mux ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
@@ -216,6 +247,9 @@ module fv_funct_generator_top(
 	// 1)
 	
 endmodule
+/*☆✼★☆✼★━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━★✼☆☆✼★｡
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━*/
+
 
 bind funct_generator fv_funct_generator_top fv_funct_generator_top_inst(.*); 
 
