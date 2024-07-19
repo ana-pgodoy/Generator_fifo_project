@@ -1,6 +1,6 @@
 import gen_fifo_defines_pkg::*;
 
-module fv_funct_generator_fsm_i (
+module fv_funct_generator_fsm (
   	input logic clk,
   	input logic rst,
   	input logic enh_conf_i,
