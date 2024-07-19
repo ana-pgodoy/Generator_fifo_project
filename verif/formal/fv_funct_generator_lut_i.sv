@@ -1,8 +1,8 @@
 import gen_fifo_defines_pkg::*;
 
 module fv_funct_generator_lut_i #(
-	parameter DATA_WIDTH= `DATA_WIDTH,
-	parameter ADDR_WIDTH= `LUT_ADDR
+	parameter DATA_WIDTH = 	`DATA_WIDTH,
+	parameter ADDR_WIDTH = 	`LUT_ADDR	 
 )( 
 	input  logic                  		clk,		
 	input  logic [ADDR_WIDTH-1:0] 		read_addr_i,
@@ -34,10 +34,11 @@ module fv_funct_generator_lut_i #(
 	read_addr_i_valid_range: assert property (@(posedge clk) read_addr_i < (2**ADDR_WIDTH)) $info("Assetion pass read_addr_i_valid_range");
 	else $error(" Asserion fail read_addr_i_valid_range");	
 	
-	// 3) The property assures that if read_addr_i request then the read_data_o should match the value stored in lut_structure at read_addr_i //changin read_addr_i for a flag to evaluate all the time after reset 
-	read_data_o_when_valid_read_addr_i: assert property (@(posedge clk) (flag) |=> (read_data_o == lut_structure[$past(read_addr_i)])) $info("Assetion pass read_data_o_when_valid_read_addr_i");
+	// 3) The property assures that if read_addr_i request then the read_data_o should match the value stored in lut_structure at read_addr_i //changin read_addr_i for a flag to evaluate all the time after reset and |=> for |->
+	read_data_o_when_valid_read_addr_i: assert property (@(posedge clk) flag |-> (read_data_o == lut_structure[$past(read_addr_i)])) $info("Assetion pass read_data_o_when_valid_read_addr_i");
 	else $error(" Asserion fail read_data_o_when_valid_read_addr_i");
  
+
 ///////////////////////////////////////////////////// Covers /////////////////////////////////////////////////////
 	
 	// 1) Covers that read operation occurs at least once.
@@ -48,6 +49,9 @@ module fv_funct_generator_lut_i #(
   	
 	// 3) Covers valid address increment.
 	cover_read_add_i_incrementing: cover property (@(posedge clk) (read_addr_i == $past(read_addr_i) + 1));
+
+	//4) Cover properties to ensure all LUT addresses are accessed
+	cover_all_addresses: cover property (@(posedge clk) read_addr_i == (2**ADDR_WIDTH-1));
 
 endmodule
 
